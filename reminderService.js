@@ -12,7 +12,6 @@ function scheduleReminder(email, subject, message, date) {
       subject: subject,
       text: message
     };
-
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.error('Error sending email:', error);
@@ -21,8 +20,6 @@ function scheduleReminder(email, subject, message, date) {
       }
     });
   });
-
   return job;
 }
-
 module.exports = { scheduleReminder };

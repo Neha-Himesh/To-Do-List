@@ -1,24 +1,20 @@
 
 <%- include("partials/header.ejs") %>
 <% const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];%>
+   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];%>
 <% if (locals.DisplayDate && locals.AddedDayTasks) { %>    
   <table>
     <tr>
       <th colspan="2"><h1><%= DisplayDate %></h1></th>
-    </tr>
-      
+    </tr>  
     <% for (var i = 0; i < AddedDayTasks.length; i++) { %>
       <tr rowspan="2"> 
         <td style="width: 500px;">
           <input type="checkbox" id="<%= 'checkbox_today_' + i %>" name="<%= AddedDayTasks[i].day_task_id %>" class="task-day-checkbox">
           <label for="<%= 'checkbox_today_' + i %>"><%= AddedDayTasks[i].day_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= AddedDayTasks[i].day_task_date %> <%= AddedDayTasks[i].day_task_time %></div>
-        </td>  
-        
+        </td>    
       </tr> 
-
     <% } %>
-     
     <tr>
       <div class="AddnewTaskContainer">
         <form action="/NewDaytask" method="post">
@@ -26,7 +22,6 @@ const months = ["January", "February", "March", "April", "May", "June", "July", 
             <input id="NewDayTask" name="NewDayTask" placeholder="Add new day task" cols="300" rows="2">
             <input type="datetime-local" id="TaskTime" name="TaskTime">
             <button type="submit" name="AddNewDayTask" class="addButton">+</button>
-
           </td>
         </form>
       </div>

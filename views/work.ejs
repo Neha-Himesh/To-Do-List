@@ -1,27 +1,31 @@
 <!--Includes work's to do list-->
 <%- include("partials/header.ejs") %>
 <% if(locals.WorkToDoTitle && locals.AddedWorkTasks){ %>    
-    <table style="border: 10px, black">
-      <tr>
-        <th colspan="2"><h1><%= WorkToDoTitle %></h1></th>
-      </tr>
-       <% for (var i=0;i<AddedWorkTasks.length;i++){ %>
+  <table style="border: 10px, black">
+    <tr>
+      <th colspan="2">
+        <h1><%= WorkToDoTitle %></h1>
+      </th>
+    </tr>
+    <% for (var i=0;i<AddedWorkTasks.length;i++){ %>
       <tr>    
-        <td style="width: 500px;">  <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= AddedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
-        <label for="<%= 'checkbox_work_' + i %>"><%= AddedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= AddedWorkTasks[i].work_task_date %> <%= AddedWorkTasks[i].work_task_time %></div>
-        
-      </td>  
+        <td style="width: 500px;">\
+          <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= AddedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
+          <label for="<%= 'checkbox_work_' + i %>"><%= AddedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= AddedWorkTasks[i].work_task_date %> <%= AddedWorkTasks[i].work_task_time %></div>
+        </td>  
       </tr>
-      <% } %>
-      <tr>
-        <div class="AddnewTaskContainer">
+    <% } %>
+    <tr>
+      <div class="AddnewTaskContainer">
         <form action="/NewWorktask" method="post">
-        <td class="AddTask"><input type="text" name="NewWorkTask" placeholder="Add new work task" width="400px">
-        <input type="datetime-local" id="TaskTime1" name="TaskTime">
-        <button type="submit" name="AddNewWorkTask"  class="addButton">+</button></td></form>
+          <td class="AddTask"><input type="text" name="NewWorkTask" placeholder="Add new work task" width="400px">
+            <input type="datetime-local" id="TaskTime1" name="TaskTime">
+            <button type="submit" name="AddNewWorkTask"  class="addButton">+</button>
+          </td>
+        </form>
       </div>
-      </tr>
-    </table>
+    </tr>
+  </table>
 <% } %>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
