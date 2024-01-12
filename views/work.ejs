@@ -1,0 +1,58 @@
+<!--Includes work's to do list-->
+<%- include("partials/header.ejs") %>
+<% if(locals.WorkToDoTitle && locals.AddedWorkTasks){ %>    
+    <table style="border: 10px, black">
+      <tr>
+        <th colspan="2"><h1><%= WorkToDoTitle %></h1></th>
+      </tr>
+       <% for (var i=0;i<AddedWorkTasks.length;i++){ %>
+      <tr>    
+        <td style="width: 500px;">  <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= AddedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
+        <label for="<%= 'checkbox_work_' + i %>"><%= AddedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= AddedWorkTasks[i].work_task_date %> <%= AddedWorkTasks[i].work_task_time %></div>
+        
+      </td>  
+      </tr>
+      <% } %>
+      <tr>
+        <div class="AddnewTaskContainer">
+        <form action="/NewWorktask" method="post">
+        <td class="AddTask"><input type="text" name="NewWorkTask" placeholder="Add new work task" width="400px">
+        <input type="datetime-local" id="TaskTime1" name="TaskTime">
+        <button type="submit" name="AddNewWorkTask"  class="addButton">+</button></td></form>
+      </div>
+      </tr>
+    </table>
+<% } %>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $(".task-work-checkbox").on("change", function () {
+      if ($(this).is(":checked")) {
+        var checkBoxId = $(this).attr("id");
+        var checkboxLabel = $("label[for='" + checkBoxId + "']").text();
+
+        $.ajax({
+          type: "POST",
+          url: "http://localhost:3000/work/deleteWorkValue",
+          data: { work_task: checkboxLabel },
+          success: function (response) {
+          
+          console.log("response is:");
+          console.log(response);
+            // Optionally, you can update the UI or perform additional actions after deletion.
+          const totalTasks=response.AddedWorkTasks.length;
+          console.log(totalTasks);
+          window.location.href = "/work";
+           
+            
+          },
+          error: function (error) {
+            console.log("error is:");
+            console.error(error);
+          }
+        });
+      }
+    });
+  });
+</script>
