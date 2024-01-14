@@ -6,7 +6,7 @@ const mongoose=require("mongoose");
 const session=require("express-session");
 const passport=require("passport");
 const passportLocalMongoose=require("passport-local-mongoose");
-var GoogleStrategy = require("passport-google-oauth20").Strategy;
+var googleStrategy = require("passport-google-oauth20").Strategy;
 var findOrCreate = require("mongoose-findorcreate");
 const { scheduleReminder } = require('./reminderService');
 const app = express();
@@ -23,8 +23,8 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-mongoose.connect("mongodb://127.0.0.1:27017/ToDoList");
-const ToDoSchema=new mongoose.Schema({
+mongoose.connect("mongodb://127.0.0.1:27017/toDoList");
+const toDoSchema=new mongoose.Schema({
   username:{
     type:String,
     required: true,
@@ -42,10 +42,10 @@ const ToDoSchema=new mongoose.Schema({
   work_task_time:String,
   work_task_date:String
 });
-ToDoSchema.plugin(passportLocalMongoose);
-ToDoSchema.plugin(findOrCreate);
-const ToDo=new mongoose.model("ToDo",ToDoSchema);
-passport.use(ToDo.createStrategy());
+toDoSchema.plugin(passportLocalMongoose);
+toDoSchema.plugin(findOrCreate);
+const toDo=new mongoose.model("toDo",toDoSchema);
+passport.use(toDo.createStrategy());
 passport.serializeUser(function(user, cb) {
   process.nextTick(function() {
     return cb(null, {
@@ -60,7 +60,7 @@ passport.deserializeUser(function(user, cb) {
     return cb(null, user);
   });
 });
-passport.use(new GoogleStrategy({
+passport.use(new googleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL:"http://localhost:3000/auth/google/today",
@@ -68,7 +68,7 @@ passport.use(new GoogleStrategy({
 },
 function(accessToken, refreshToken, profile, cb) {
   console.log(profile);
-  ToDo.findOrCreate({ username: profile.displayName,googleId: profile.id }, function (err, user) {
+  toDo.findOrCreate({ username: profile.displayName,googleId: profile.id }, function (err, user) {
     return cb(err, user);
   });
 }
@@ -79,8 +79,8 @@ const d = new Date();
 let day = days[d.getDay()]; 
 let month = months[d.getMonth()];
 const date = d.getDate(); 
-var DateInRequiredForm= day+", "+month+" "+date;
-var WorkTitle= "Today's Work To-do List";
+var dateInRequiredForm= day+", "+month+" "+date;
+var workTitle= "Today's Work To-do List";
 var id=1;
 app.get("/",function(req,res){
   res.render("home.ejs");
@@ -88,9 +88,9 @@ app.get("/",function(req,res){
 app.get("/auth/google", passport.authenticate("google",{scope: ["profile"]}));
 app.get("/work",async function(req,res){
   if(req.isAuthenticated()){
-      var WorkTaskList= await ToDo.find({work_task_id:{$ne: null}});
-      if(WorkTaskList){
-        res.render("work",{WorkToDoTitle: WorkTitle,AddedWorkTasks: WorkTaskList});
+      var workTaskList= await toDo.find({work_task_id:{$ne: null}});
+      if(workTaskList){
+        res.render("work",{worktoDoTitle: workTitle,addedworkTasks: workTaskList});
       }
       else{
         console.log("Error");
@@ -102,9 +102,9 @@ app.get("/work",async function(req,res){
 }
 );  
 app.post("/work", async function(req,res){
-  var WorkTaskList= await ToDo.find({work_task_id:{$ne: null}});
-  if(WorkTaskList){
-    res.render("work",{WorkToDoTitle: WorkTitle,AddedWorkTasks: WorkTaskList});
+  var workTaskList= await toDo.find({work_task_id:{$ne: null}});
+  if(workTaskList){
+    res.render("work",{worktoDoTitle: workTitle,addedworkTasks: workTaskList});
   }
   else{
     console.log("Error");
@@ -113,9 +113,9 @@ app.post("/work", async function(req,res){
 );
 app.get("/auth/google/today",passport.authenticate("google", { scope: ["profile"],failureRedirect: "/login" }),
   async function(req,res){
-    var ToDoDayList=await ToDo.find({day_task_id:{$ne: null}});
-    if(ToDoDayList){
-       res.render("today",{DisplayDate : DateInRequiredForm,AddedDayTasks: ToDoDayList});
+    var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
+    if(toDoDayList){
+       res.render("today",{displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
     }
     else{
       console.log("Error");
@@ -125,9 +125,9 @@ app.get("/auth/google/today",passport.authenticate("google", { scope: ["profile"
 app.get("/today",
   async function(req,res){
    if(req.isAuthenticated()){  
-     var ToDoDayList=await ToDo.find({day_task_id:{$ne: null}});
-     if(ToDoDayList){
-       res.render("today",{DisplayDate : DateInRequiredForm,AddedDayTasks: ToDoDayList});
+     var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
+     if(toDoDayList){
+       res.render("today",{displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
      }
      else{
       console.log("Error");
@@ -146,9 +146,9 @@ app.get("/login",function(req,res){
 });
 app.post("/auth/google/today",passport.authenticate("google", { scope: ["profile"],failureRedirect: "/login" }),
   async function(req,res){
-    var ToDoDayList=await ToDo.find({day_task_id:{$ne: null}});
-    if(ToDoDayList){
-      res.render("today.ejs",{DisplayDate : DateInRequiredForm,AddedDayTasks: ToDoDayList});
+    var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
+    if(toDoDayList){
+      res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
     }
     else{
       console.log("Error");
@@ -156,16 +156,16 @@ app.post("/auth/google/today",passport.authenticate("google", { scope: ["profile
   }
 );
 app.post("/NewWorktask",async function(req,res){
-  const NewAddedWorkTask=req.body["NewWorkTask"];
-  const NewAddedWorkTask_id=id;
+  const newAddedWorkTask=req.body["NewWorkTask"];
+  const newAddedWorkTask_id=id;
   const work_task_date_and_time=req.body["TaskTime"].split("T");
-  console.log(NewAddedWorkTask_id);
-  ToDo.create(
+  console.log(newAddedWorkTask_id);
+  toDo.create(
     {
       username: req.user.username,
       googleId:req.user.googleId,
-      work_task_id:NewAddedWorkTask_id,
-      work_task: NewAddedWorkTask,
+      work_task_id:newAddedWorkTask_id,
+      work_task: newAddedWorkTask,
       work_task_date:work_task_date_and_time[0],
       work_task_time:work_task_date_and_time[1],
     }).then(()=>{
@@ -174,7 +174,7 @@ app.post("/NewWorktask",async function(req,res){
       console.log("Work task inserted");
       const reminderJob = scheduleReminder(
         'nehahimesh.10@gmail.com',
-        NewAddedWorkTask,
+        newAddedWorkTask,
         'This is your reminder message! Ignore if the task is already done',
         new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
        );      
@@ -184,19 +184,19 @@ app.post("/NewWorktask",async function(req,res){
       }).catch((err)=>{
         console.log(err);
       });   
-  var WorkTasks=await ToDo.find({work_task_id:{$ne:null}});
-  res.render("work.ejs",{WorkToDoTitle : WorkTitle,AddedWorkTasks: WorkTasks});
+  var workTasks=await toDo.find({work_task_id:{$ne:null}});
+  res.render("work.ejs",{worktoDoTitle : workTitle,addedworkTasks: workTasks});
 });
 app.post("/NewDaytask",async function(req,res){
-  const NewAddedDayTask=req.body["NewDayTask"];
-  const NewAddedDayTask_id=id;
+  const newAddedDayTask=req.body["NewDayTask"];
+  const newAddedDayTask_id=id;
   const day_task_date_and_time=req.body["TaskTime"].split("T");
-  ToDo.create(
+  toDo.create(
     {
       username: req.user.username,
       googleId:req.user.googleId,
-      day_task_id:NewAddedDayTask_id,
-      day_task: NewAddedDayTask,
+      day_task_id:newAddedDayTask_id,
+      day_task: newAddedDayTask,
       day_task_date:day_task_date_and_time[0],
       day_task_time:day_task_date_and_time[1],
     }).then(()=>{
@@ -205,7 +205,7 @@ app.post("/NewDaytask",async function(req,res){
        console.log("Day task inserted");
        const reminderJob = scheduleReminder(
          'nehahimesh.10@gmail.com',
-         NewAddedDayTask,
+         newAddedDayTask,
          'This is your reminder message! Ignore if the task is already done',
          new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
        );
@@ -216,18 +216,18 @@ app.post("/NewDaytask",async function(req,res){
      }).catch((err)=>{
          console.log(err);
        });
-  var DayTasks=await ToDo.find({day_task_id:{$ne:null}});
-  res.render("today.ejs",{DisplayDate : DateInRequiredForm,AddedDayTasks: DayTasks});
+  var dayTasks=await toDo.find({day_task_id:{$ne:null}});
+  res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: dayTasks});
 });
 app.post("/auth/google/today/deleteTodayValue",async (req,res)=>{
   const deletedLabel=req.body.day_task;
   console.log(deletedLabel);
   try{
-    const result=await ToDo.deleteOne({day_task: deletedLabel});
+    const result=await toDo.deleteOne({day_task: deletedLabel});
     if(result.deletedCount==1){
-      var ToDoDayList=await ToDo.find({day_task_id:{$ne: null}});
-      if(ToDoDayList){
-        res.status(200).send({DisplayDate : DateInRequiredForm,AddedDayTasks: ToDoDayList});
+      var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
+      if(toDoDayList){
+        res.status(200).send({displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
       }
        else{
         console.log("Error");
@@ -246,11 +246,11 @@ app.post("/work/deleteWorkValue",async (req,res)=>{
   const deletedLabel=req.body.work_task;
   console.log(deletedLabel);
   try{
-    const result=await ToDo.deleteOne({work_task: deletedLabel});
+    const result=await toDo.deleteOne({work_task: deletedLabel});
     if(result.deletedCount==1){
-      var ToDoWorkList=await ToDo.find({work_task_id:{$ne: null}});
-      if(ToDoWorkList){
-        res.status(200).send({DisplayDate : DateInRequiredForm,AddedWorkTasks: ToDoWorkList});
+      var toDoWorkList=await toDo.find({work_task_id:{$ne: null}});
+      if(toDoWorkList){
+        res.status(200).send({displayDate : dateInRequiredForm,addedworkTasks: toDoWorkList});
       }
       else{
         console.log("Error");
@@ -266,7 +266,7 @@ app.post("/work/deleteWorkValue",async (req,res)=>{
   }
 });
 app.post("strikeDay",(req,res)=>{
-  res.render("today.ejs",{DisplayDate : DateInRequiredForm,AddedDayTasks: DayTasks})
+  res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: dayTasks})
   console.log(req.body);
 });
 app.listen(port, () => {

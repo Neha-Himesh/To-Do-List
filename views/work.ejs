@@ -1,17 +1,17 @@
 <!--Includes work's to do list-->
 <%- include("partials/header.ejs") %>
-<% if(locals.WorkToDoTitle && locals.AddedWorkTasks){ %>    
+<% if(locals.workToDoTitle && locals.addedWorkTasks){ %>    
   <table style="border: 10px, black">
     <tr>
       <th colspan="2">
-        <h1><%= WorkToDoTitle %></h1>
+        <h1><%= workToDoTitle %></h1>
       </th>
     </tr>
-    <% for (var i=0;i<AddedWorkTasks.length;i++){ %>
+    <% for (var i=0;i<addedWorkTasks.length;i++){ %>
       <tr>    
         <td style="width: 500px;">\
-          <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= AddedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
-          <label for="<%= 'checkbox_work_' + i %>"><%= AddedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= AddedWorkTasks[i].work_task_date %> <%= AddedWorkTasks[i].work_task_time %></div>
+          <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= addedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
+          <label for="<%= 'checkbox_work_' + i %>"><%= addedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= addedWorkTasks[i].work_task_date %> <%= addedWorkTasks[i].work_task_time %></div>
         </td>  
       </tr>
     <% } %>
@@ -45,7 +45,7 @@
           console.log("response is:");
           console.log(response);
             // Optionally, you can update the UI or perform additional actions after deletion.
-          const totalTasks=response.AddedWorkTasks.length;
+          const totalTasks=response.addedWorkTasks.length;
           console.log(totalTasks);
           window.location.href = "/work";
            
