@@ -17,7 +17,7 @@
     <% } %>
     <tr>
       <div class="AddnewTaskContainer">
-        <form action="/NewWorktask" method="post">
+        <form action="/new-work-task" method="post">
           <td class="AddTask"><input type="text" name="NewWorkTask" placeholder="Add new work task" width="400px">
             <input type="datetime-local" id="TaskTime1" name="TaskTime">
             <button type="submit" name="AddNewWorkTask"  class="addButton">+</button>
@@ -38,7 +38,7 @@
 
         $.ajax({
           type: "POST",
-          url: "http://localhost:3000/work/deleteWorkValue",
+          url: "http://localhost:3000/work/delete-work-value",
           data: { work_task: checkboxLabel },
           success: function (response) {
           

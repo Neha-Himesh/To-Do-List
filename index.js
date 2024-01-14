@@ -155,7 +155,7 @@ app.post("/auth/google/today",passport.authenticate("google", { scope: ["profile
     }
   }
 );
-app.post("/NewWorktask",async function(req,res){
+app.post("/new-work-task",async function(req,res){
   const newAddedWorkTask=req.body["NewWorkTask"];
   const newAddedWorkTask_id=id;
   const work_task_date_and_time=req.body["TaskTime"].split("T");
@@ -187,7 +187,7 @@ app.post("/NewWorktask",async function(req,res){
   var workTasks=await toDo.find({work_task_id:{$ne:null}});
   res.render("work.ejs",{worktoDoTitle : workTitle,addedworkTasks: workTasks});
 });
-app.post("/NewDaytask",async function(req,res){
+app.post("/new-day-task",async function(req,res){
   const newAddedDayTask=req.body["NewDayTask"];
   const newAddedDayTask_id=id;
   const day_task_date_and_time=req.body["TaskTime"].split("T");
@@ -219,7 +219,7 @@ app.post("/NewDaytask",async function(req,res){
   var dayTasks=await toDo.find({day_task_id:{$ne:null}});
   res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: dayTasks});
 });
-app.post("/auth/google/today/deleteTodayValue",async (req,res)=>{
+app.post("/auth/google/today/delete-today-value",async (req,res)=>{
   const deletedLabel=req.body.day_task;
   console.log(deletedLabel);
   try{
@@ -242,7 +242,7 @@ app.post("/auth/google/today/deleteTodayValue",async (req,res)=>{
     res.status(500).json({error:'Internal Server Error'});
   }
 });  
-app.post("/work/deleteWorkValue",async (req,res)=>{
+app.post("/work/delete-work-value",async (req,res)=>{
   const deletedLabel=req.body.work_task;
   console.log(deletedLabel);
   try{
@@ -265,7 +265,7 @@ app.post("/work/deleteWorkValue",async (req,res)=>{
     res.status(500).json({error:'Internal Server Error'});
   }
 });
-app.post("strikeDay",(req,res)=>{
+app.post("strike-day",(req,res)=>{
   res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: dayTasks})
   console.log(req.body);
 });

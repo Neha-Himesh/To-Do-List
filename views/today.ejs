@@ -17,7 +17,7 @@
     <% } %>
     <tr>
       <div class="AddnewTaskContainer">
-        <form action="/NewDaytask" method="post">
+        <form action="/new-day-task" method="post">
           <td class="AddTask">
             <input id="NewDayTask" name="NewDayTask" placeholder="Add new day task" cols="300" rows="2">
             <input type="datetime-local" id="TaskTime" name="TaskTime">
@@ -39,7 +39,7 @@
 
         $.ajax({
           type: "POST",
-          url: "http://localhost:3000/auth/google/today/deleteTodayValue",
+          url: "http://localhost:3000/auth/google/today/delete-today-value",
           data: { day_task: checkboxLabel },
           success: function (response) {
           
