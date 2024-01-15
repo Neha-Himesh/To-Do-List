@@ -23,7 +23,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-mongoose.connect("mongodb://127.0.0.1:27017/toDoList");
+mongoose.connect("mongodb://127.0.0.1:27017/ToDoList");
 const toDoSchema=new mongoose.Schema({
   username:{
     type:String,
@@ -90,7 +90,7 @@ app.get("/work",async function(req,res){
   if(req.isAuthenticated()){
       var workTaskList= await toDo.find({work_task_id:{$ne: null}});
       if(workTaskList){
-        res.render("work",{worktoDoTitle: workTitle,addedworkTasks: workTaskList});
+        res.render("work",{workToDoTitle: workTitle,addedWorkTasks: workTaskList});
       }
       else{
         console.log("Error");
@@ -104,7 +104,7 @@ app.get("/work",async function(req,res){
 app.post("/work", async function(req,res){
   var workTaskList= await toDo.find({work_task_id:{$ne: null}});
   if(workTaskList){
-    res.render("work",{worktoDoTitle: workTitle,addedworkTasks: workTaskList});
+    res.render("work",{workToDoTitle: workTitle,addedWorkTasks: workTaskList});
   }
   else{
     console.log("Error");
@@ -115,7 +115,7 @@ app.get("/auth/google/today",passport.authenticate("google", { scope: ["profile"
   async function(req,res){
     var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
     if(toDoDayList){
-       res.render("today",{displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
+       res.render("today",{displayDate : dateInRequiredForm,addedDayTasks: toDoDayList});
     }
     else{
       console.log("Error");
@@ -127,7 +127,7 @@ app.get("/today",
    if(req.isAuthenticated()){  
      var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
      if(toDoDayList){
-       res.render("today",{displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
+       res.render("today",{displayDate : dateInRequiredForm,addedDayTasks: toDoDayList});
      }
      else{
       console.log("Error");
@@ -148,7 +148,7 @@ app.post("/auth/google/today",passport.authenticate("google", { scope: ["profile
   async function(req,res){
     var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
     if(toDoDayList){
-      res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
+      res.render("today.ejs",{displayDate : dateInRequiredForm,addedDayTasks: toDoDayList});
     }
     else{
       console.log("Error");
@@ -185,7 +185,7 @@ app.post("/new-work-task",async function(req,res){
         console.log(err);
       });   
   var workTasks=await toDo.find({work_task_id:{$ne:null}});
-  res.render("work.ejs",{worktoDoTitle : workTitle,addedworkTasks: workTasks});
+  res.render("work.ejs",{workToDoTitle : workTitle,addedWorkTasks: workTasks});
 });
 app.post("/new-day-task",async function(req,res){
   const newAddedDayTask=req.body["NewDayTask"];
@@ -217,7 +217,7 @@ app.post("/new-day-task",async function(req,res){
          console.log(err);
        });
   var dayTasks=await toDo.find({day_task_id:{$ne:null}});
-  res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: dayTasks});
+  res.render("today.ejs",{displayDate : dateInRequiredForm,addedDayTasks: dayTasks});
 });
 app.post("/auth/google/today/delete-today-value",async (req,res)=>{
   const deletedLabel=req.body.day_task;
@@ -227,7 +227,7 @@ app.post("/auth/google/today/delete-today-value",async (req,res)=>{
     if(result.deletedCount==1){
       var toDoDayList=await toDo.find({day_task_id:{$ne: null}});
       if(toDoDayList){
-        res.status(200).send({displayDate : dateInRequiredForm,addeddayTasks: toDoDayList});
+        res.status(200).send({displayDate : dateInRequiredForm,addedDayTasks: toDoDayList});
       }
        else{
         console.log("Error");
@@ -250,7 +250,7 @@ app.post("/work/delete-work-value",async (req,res)=>{
     if(result.deletedCount==1){
       var toDoWorkList=await toDo.find({work_task_id:{$ne: null}});
       if(toDoWorkList){
-        res.status(200).send({displayDate : dateInRequiredForm,addedworkTasks: toDoWorkList});
+        res.status(200).send({displayDate : dateInRequiredForm,addedWorkTasks: toDoWorkList});
       }
       else{
         console.log("Error");
@@ -266,7 +266,7 @@ app.post("/work/delete-work-value",async (req,res)=>{
   }
 });
 app.post("strike-day",(req,res)=>{
-  res.render("today.ejs",{displayDate : dateInRequiredForm,addeddayTasks: dayTasks})
+  res.render("today.ejs",{displayDate : dateInRequiredForm,addedDayTasks: dayTasks})
   console.log(req.body);
 });
 app.listen(port, () => {

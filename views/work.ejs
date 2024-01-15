@@ -9,7 +9,7 @@
     </tr>
     <% for (var i=0;i<addedWorkTasks.length;i++){ %>
       <tr>    
-        <td style="width: 500px;">\
+        <td style="width: 500px;">
           <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= addedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
           <label for="<%= 'checkbox_work_' + i %>"><%= addedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= addedWorkTasks[i].work_task_date %> <%= addedWorkTasks[i].work_task_time %></div>
         </td>  
