@@ -158,64 +158,97 @@ app.post("/auth/google/today",passport.authenticate("google", { scope: ["profile
 app.post("/new-work-task",async function(req,res){
   const newAddedWorkTask=req.body["NewWorkTask"];
   const newAddedWorkTask_id=id;
-  const work_task_date_and_time=req.body["TaskTime"].split("T");
   console.log(newAddedWorkTask_id);
-  toDo.create(
-    {
+  console.log(typeof req.body["TaskTime"]);
+  console.log(req.body["TaskTime"]);
+  if(req.body["TaskTime"]!=""){
+    const work_task_date_and_time=req.body["TaskTime"].split("T");
+    toDo.create(
+      {
+        username: req.user.username,
+        googleId:req.user.googleId,
+        work_task_id:newAddedWorkTask_id,
+        work_task: newAddedWorkTask,
+        work_task_date:work_task_date_and_time[0],
+        work_task_time:work_task_date_and_time[1],
+      }).then(()=>{
+        const dateArray=work_task_date_and_time[0].split("-");
+        const timeArray=work_task_date_and_time[1].split(":");
+        console.log("Work task inserted");
+        const reminderJob = scheduleReminder(
+          'nehahimesh.10@gmail.com',
+          newAddedWorkTask,
+          'This is your reminder message! Ignore if the task is already done',
+          new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
+         );      
+        console.log(work_task_date_and_time);
+        console.log('Reminder scheduled:', reminderJob);
+        id++;
+        }).catch((err)=>{
+          console.log(err);
+        });   
+ } 
+  else{
+    toDo.create(
+     {
       username: req.user.username,
       googleId:req.user.googleId,
       work_task_id:newAddedWorkTask_id,
       work_task: newAddedWorkTask,
-      work_task_date:work_task_date_and_time[0],
-      work_task_time:work_task_date_and_time[1],
-    }).then(()=>{
-      const dateArray=work_task_date_and_time[0].split("-");
-      const timeArray=work_task_date_and_time[1].split(":");
+     }).then(()=>{
       console.log("Work task inserted");
-      const reminderJob = scheduleReminder(
-        'nehahimesh.10@gmail.com',
-        newAddedWorkTask,
-        'This is your reminder message! Ignore if the task is already done',
-        new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
-       );      
-      console.log(work_task_date_and_time);
-      console.log('Reminder scheduled:', reminderJob);
       id++;
-      }).catch((err)=>{
-        console.log(err);
-      });   
+     }).catch((err)=>{
+      console.log(err);
+     });  
+   }     
   var workTasks=await toDo.find({work_task_id:{$ne:null}});
   res.render("work.ejs",{workToDoTitle : workTitle,addedWorkTasks: workTasks});
 });
 app.post("/new-day-task",async function(req,res){
   const newAddedDayTask=req.body["NewDayTask"];
   const newAddedDayTask_id=id;
-  const day_task_date_and_time=req.body["TaskTime"].split("T");
-  toDo.create(
-    {
-      username: req.user.username,
-      googleId:req.user.googleId,
-      day_task_id:newAddedDayTask_id,
-      day_task: newAddedDayTask,
-      day_task_date:day_task_date_and_time[0],
-      day_task_time:day_task_date_and_time[1],
-    }).then(()=>{
-       const dateArray=day_task_date_and_time[0].split("-");
-       const timeArray=day_task_date_and_time[1].split(":");
-       console.log("Day task inserted");
-       const reminderJob = scheduleReminder(
-         'nehahimesh.10@gmail.com',
-         newAddedDayTask,
-         'This is your reminder message! Ignore if the task is already done',
-         new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
-       );
-        
-       console.log(day_task_date_and_time);
-       console.log('Reminder scheduled:', reminderJob);
-       id++;
-     }).catch((err)=>{
-         console.log(err);
-       });
+  if(req.body["TaskTime"]!=""){
+    const day_task_date_and_time=req.body["TaskTime"].split("T");
+    toDo.create(
+      {
+        username: req.user.username,
+        googleId:req.user.googleId,
+        day_task_id:newAddedDayTask_id,
+        day_task: newAddedDayTask,
+        day_task_date:day_task_date_and_time[0],
+        day_task_time:day_task_date_and_time[1],
+      }).then(()=>{
+        const dateArray=day_task_date_and_time[0].split("-");
+        const timeArray=day_task_date_and_time[1].split(":");
+        console.log("Day task inserted");
+        const reminderJob = scheduleReminder(
+          'nehahimesh.10@gmail.com',
+          newAddedDayTask,
+          'This is your reminder message! Ignore if the task is already done',
+          new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
+        );
+        console.log(day_task_date_and_time);
+        console.log('Reminder scheduled:', reminderJob);
+        id++;
+      }).catch((err)=>{
+        console.log(err);
+      });
+  } 
+  else{
+    toDo.create(
+      {
+        username: req.user.username,
+        googleId:req.user.googleId,
+        day_task_id:newAddedDayTask_id,
+        day_task: newAddedDayTask,
+      }).then(()=>{
+        console.log("Day task inserted");
+        id++;
+      }).catch((err)=>{
+        console.log(err);
+      });
+  }
   var dayTasks=await toDo.find({day_task_id:{$ne:null}});
   res.render("today.ejs",{displayDate : dateInRequiredForm,addedDayTasks: dayTasks});
 });
@@ -269,6 +302,14 @@ app.post("strike-day",(req,res)=>{
   res.render("today.ejs",{displayDate : dateInRequiredForm,addedDayTasks: dayTasks})
   console.log(req.body);
 });
+
+app.post('/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 }); 

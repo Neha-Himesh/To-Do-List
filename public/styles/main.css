@@ -102,22 +102,37 @@ input[type=checkbox]:checked +label {
   color:red;
   text-decoration: line-through;
 } 
+.top_bar_buttons{
+  display:flex;
+  justify-content:space-around;
+  gap:60%;
+  
+}
+.logout_section{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
 .button_container{
   display: flex;
   justify-content: flex-start;
   gap:10px;
 }
-button{
+.to_do_buttons{
   border: none;
   color: #551A8B;
   background-color: transparent;
   background-image: none;
   gap: 10px;
+  align-items: center;
 }
 i.fa{
   color: #551A8B;
   font-size:20px;
   padding: 10px;
+}
+.bi{
+  color: #551A8B;
 }
 #today{
   order:-1;
