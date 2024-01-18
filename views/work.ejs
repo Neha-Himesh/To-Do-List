@@ -48,8 +48,6 @@
           const totalTasks=response.addedWorkTasks.length;
           console.log(totalTasks);
           window.location.href = "/work";
-           
-            
           },
           error: function (error) {
             console.log("error is:");
@@ -59,4 +57,30 @@
       }
     });
   });
+  $(document).ready(function () {
+      var dtNow = new Date();
+      var year = dtNow.getFullYear();
+      var month = (dtNow.getMonth() + 1).toString().padStart(2, '0');
+      var day = dtNow.getDate().toString().padStart(2, '0');
+      var hours = dtNow.getHours().toString().padStart(2, '0');
+      var minutes = dtNow.getMinutes().toString().padStart(2, '0');
+
+      var currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+      console.log(currentDateTime);
+      $('#TaskTime1').attr('min', currentDateTime);
+      var inputDateTime = document.getElementById('TaskTime1');
+
+      inputDateTime.addEventListener('input', function () {
+        var selectedDateTime = new Date(this.value);
+        var currentDateTime = new Date();
+
+        if (selectedDateTime < currentDateTime) { //Ensures time and date are of future (current time isnt allowed to be selected).Check the requirement
+          this.setCustomValidity('Please select future date and time');
+        } else {
+          this.setCustomValidity('');
+        }
+      });
+    });
 </script>
+</body>
+</html>
