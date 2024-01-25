@@ -10,8 +10,21 @@
     <% for (var i = 0; i < addedDayTasks.length; i++) { %>
       <tr rowspan="2"> 
         <td style="width: 500px;">
-          <input type="checkbox" id="<%= 'checkbox_today_' + i %>" name="<%= addedDayTasks[i].day_task_id %>" class="task-day-checkbox">
-          <label for="<%= 'checkbox_today_' + i %>"><%= addedDayTasks[i].day_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= addedDayTasks[i].day_task_date %> <%= addedDayTasks[i].day_task_time %></div>
+          <div class="day-tasks-text" id="<%='task_today_'+ i %>">
+            <input type="checkbox" id="<%= 'checkbox_today_' + i %>" name="<%= addedDayTasks[i].day_task_id %>" class="task-day-checkbox">
+            <% if(addedDayTasks[i].day_task.length>50){ %>
+              <label for="<%= 'checkbox_today_' + i %>" ><%= addedDayTasks[i].day_task.substring(0,50) %></label>
+              <a id="<%='day_task_see_more_link'+ i %>">See More...</a>
+            <%} else {%>
+              <label for="<%= 'checkbox_today_' + i %>" ><%= addedDayTasks[i].day_task %></label>
+            <% } %>
+            <p id="<%='full_text_checkbox_today_'+i %>" class="hidden"><%= addedDayTasks[i].day_task %></p>
+            <p id="<%='half_text_checkbox_today_'+i %>" class="hidden"><%= addedDayTasks[i].day_task.substring(0,50) %></p>
+          </div>
+          <br>
+          <div class="date_time"> 
+            &nbsp; &nbsp; &nbsp;<%= addedDayTasks[i].day_task_date %> <%= addedDayTasks[i].day_task_time %>
+          </div>
         </td>    
       </tr> 
     <% } %>
@@ -35,55 +48,148 @@
     $(".task-day-checkbox").on("change", function () {
       if ($(this).is(":checked")) {
         var checkBoxId = $(this).attr("id");
-        var checkboxLabel = $("label[for='" + checkBoxId + "']").text();
-
+        var checkBoxIdFullText=$('p[id="full_text_'+checkBoxId+ '"]').text();
+        console.log(checkBoxIdFullText);
+        //var checkboxLabelText=checkboxLabelInnerHTML.split(".")[1];
+        
         $.ajax({
           type: "POST",
-          url: "http://localhost:3000/auth/google/today/delete-today-value",
-          data: { day_task: checkboxLabel },
+          url: "/auth/google/today/delete-today-value", // Use a relative URL
+          data: { day_task: checkBoxIdFullText },
           success: function (response) {
-          
-          console.log("response is:");
-          console.log(response);
-            // Optionally, you can update the UI or perform additional actions after deletion.
-          const totalTasks=response.addedDayTasks.length;
-          console.log(totalTasks);
-        
-          window.location.href = "/auth/google/today";
+            console.log("Response is:", response);
             
-          },
+            // Optionally, update the UI or perform additional actions after deletion.
+            const totalTasks = response.addedDayTasks.length;
+            console.log("Total tasks:", totalTasks);
+            
+            window.location.href = "/auth/google/today";
+          },  
           error: function (error) {
-            console.log("error is:");
-            console.error(error);
+            console.error("Error is:", error);
           }
         });
       }
     });
   });
+
   $(document).ready(function () {
-      var dtNow = new Date();
-      var year = dtNow.getFullYear();
-      var month = (dtNow.getMonth() + 1).toString().padStart(2, '0');
-      var day = dtNow.getDate().toString().padStart(2, '0');
-      var hours = dtNow.getHours().toString().padStart(2, '0');
-      var minutes = dtNow.getMinutes().toString().padStart(2, '0');
+    var dtNow = new Date();
+    var year = dtNow.getFullYear();
+    var month = (dtNow.getMonth() + 1).toString().padStart(2, '0');
+    var day = dtNow.getDate().toString().padStart(2, '0');
+    var hours = dtNow.getHours().toString().padStart(2, '0');
+    var minutes = dtNow.getMinutes().toString().padStart(2, '0');
 
-      var currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-      console.log(currentDateTime);
-      $('#TaskTime').attr('min', currentDateTime);
-      var inputDateTime = document.getElementById('TaskTime');
+    var currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    console.log(currentDateTime);
+    $('#TaskTime').attr('min', currentDateTime);
+    var inputDateTime = document.getElementById('TaskTime');
 
-      inputDateTime.addEventListener('input', function () {
-        var selectedDateTime = new Date(this.value);
-        var currentDateTime = new Date();
+    inputDateTime.addEventListener('input', function () {
+      var selectedDateTime = new Date(this.value);
+      var currentDateTime = new Date();
 
-        if (selectedDateTime < currentDateTime) { //Ensures time and date are of future (current time isnt allowed to be selected).Check the requirement
-          this.setCustomValidity('Please select future date and time');
+       if (selectedDateTime < currentDateTime) { //Ensures time and date are of future (current time isnt allowed to be selected).Check the requirement
+         this.setCustomValidity('Please select future date and time');
         } else {
-          this.setCustomValidity('');
+         this.setCustomValidity('');
         }
-      });
     });
+  });
+var seeLesslinks,seeMoreLinks;
+function getSeeMoreLinks(){  
+ var elements=document.querySelectorAll('[id^="day_task_see_more_link"]');
+ console.log(elements);
+ for(var i=0;i<elements.length;i++){
+   elements[i].addEventListener("click",disableHidden(elements,i));
+ }
+ return elements;
+}
+
+function getSeeLessLinks(){
+ var elements1=document.querySelectorAll('[id^="day_task_see_less_link"]');
+ console.log(elements1);
+ for(var i=0;i<elements1.length;i++){
+   elements1[i].addEventListener("click",enableHidden(elements1,i));
+ }
+ return elements1;
+}
+
+function handleDomChanges(mutations) {
+  // Refresh the NodeList after any DOM update
+  seeLessLinks = getSeeLessLinks();
+  seeMoreLinks = getSeeMoreLinks();
+
+  // ... Other code ...
+}
+
+const observer = new MutationObserver(handleDomChanges);
+
+const observerOptions = {
+  childList: true,
+  subtree: true
+};
+
+// Start observing the document
+observer.observe(document.body, observerOptions);
+
+ function disableHidden(elements,index){
+   return function(){
+     console.log(index); 
+     console.log(elements[index]);
+     var anchorTagId=elements[index].id;
+     console.log(anchorTagId);
+     var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
+     console.log(anchorTagIdSplit);
+     var parentElement=document.getElementById("task_today_"+anchorTagIdSplit);
+     console.log(parentElement);
+     var oldLabel =parentElement.getElementsByTagName("label")[0];
+     console.log(oldLabel);
+     var oldlabelForValue=oldLabel.getAttribute("for");
+     var newLabel=document.createElement("label");
+     newLabel.setAttribute("for",oldlabelForValue);
+     var totalText=parentElement.querySelector('[id^="full_text_checkbox_today_"]').innerHTML;
+     newLabel.innerHTML=totalText;
+     console.log(newLabel.innerHTML);
+     parentElement.replaceChild(newLabel,oldLabel);
+     var seeLessLinkElement=document.createElement("a");
+     seeLessLinkElement.setAttribute("id","day_task_see_less_link"+anchorTagIdSplit);
+     seeLessLinkElement.innerHTML="See Less...";
+     console.log(elements[index].parentNode.nodeName);
+     parentElement.replaceChild(seeLessLinkElement,elements[index]);
+   };
+ }
+
+  
+  
+ function enableHidden(elements1,index){
+   return function(){
+     console.log(index); 
+     console.log(elements1[index]);
+     var anchorTagId=elements1[index].id;
+     console.log(anchorTagId);
+     var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
+     console.log(anchorTagIdSplit);
+     var parentElement=document.getElementById("task_today_"+anchorTagIdSplit);
+     console.log(parentElement);
+     var oldLabel =parentElement.getElementsByTagName("label")[0];
+     console.log(oldLabel);
+     var oldlabelForValue=oldLabel.getAttribute("for");
+     var newLabel=document.createElement("label");
+     newLabel.setAttribute("for",oldlabelForValue);
+     var totalText=parentElement.querySelector('[id^="half_text_checkbox_today_"]').innerHTML;
+     newLabel.innerHTML=totalText;
+     console.log(newLabel.innerHTML);
+     parentElement.replaceChild(newLabel,oldLabel);
+     var seeLessLinkElement=document.createElement("a");
+     seeLessLinkElement.setAttribute("id","day_task_see_more_link"+anchorTagIdSplit);
+     seeLessLinkElement.innerHTML="See More...";
+     console.log(elements1[index].parentNode.nodeName);
+     parentElement.replaceChild(seeLessLinkElement,elements1[index]);
+   };
+ }
+
 </script>
 </body>
 </html>

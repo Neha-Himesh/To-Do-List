@@ -25,6 +25,7 @@ img{
   justify-content: center;
   align-items: center;
   gap:20px;
+  background-color: #e4e9fd ;
 }
 .html_home{
   background-image: none;
@@ -106,7 +107,6 @@ input[type=checkbox]:checked +label {
   display:flex;
   justify-content:space-around;
   gap:60%;
-  
 }
 .logout_section{
   display:flex;
@@ -193,4 +193,15 @@ form>td>input,form>td>button{
 }
 input{
   text-align: center;
+}
+.hidden {
+  display: none;
+}
+.day-tasks-text,.work-tasks-text{
+  overflow: hidden;
+  width:500px;
+}
+a{
+  color: blue;
+  cursor: pointer;
 }

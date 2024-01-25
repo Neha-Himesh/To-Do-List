@@ -10,8 +10,21 @@
     <% for (var i=0;i<addedWorkTasks.length;i++){ %>
       <tr>    
         <td style="width: 500px;">
-          <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= addedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
-          <label for="<%= 'checkbox_work_' + i %>"><%= addedWorkTasks[i].work_task %></label> <br><div class="date_time"> &nbsp; &nbsp; &nbsp;<%= addedWorkTasks[i].work_task_date %> <%= addedWorkTasks[i].work_task_time %></div>
+          <div class="work-tasks-text" id="<%='task_work_'+ i %>">
+            <input type="checkbox" id="<%= 'checkbox_work_' + i %>" name="<%= addedWorkTasks[i].work_task_id %>" class="task-work-checkbox">
+            <% if(addedWorkTasks[i].work_task.length>50){ %> 
+              <label for="<%= 'checkbox_work_' + i %>"><%= addedWorkTasks[i].work_task.substring(0,50) %></label>
+              <a id="<%='work_task_see_more_link'+ i %>">See More...</a>
+            <%} else {%>
+              <label for="<%= 'checkbox_work_' + i %>" ><%= addedWorkTasks[i].work_task %></label>
+            <% } %>
+            <p id="<%='full_text_checkbox_work_'+i %>" class="hidden"><%= addedWorkTasks[i].work_task %></p>
+            <p id="<%='half_text_checkbox_work_'+i %>" class="hidden"><%= addedWorkTasks[i].work_task.substring(0,50) %></p>  
+          </div>
+          <br>
+          <div class="date_time">
+             &nbsp; &nbsp; &nbsp;<%= addedWorkTasks[i].work_task_date %> <%= addedWorkTasks[i].work_task_time %>
+          </div>
         </td>  
       </tr>
     <% } %>
@@ -34,12 +47,13 @@
     $(".task-work-checkbox").on("change", function () {
       if ($(this).is(":checked")) {
         var checkBoxId = $(this).attr("id");
-        var checkboxLabel = $("label[for='" + checkBoxId + "']").text();
+        var checkBoxIdFullText=$('p[id="full_text_'+checkBoxId+ '"]').text();
+        console.log(checkBoxIdFullText);
 
         $.ajax({
           type: "POST",
           url: "http://localhost:3000/work/delete-work-value",
-          data: { work_task: checkboxLabel },
+          data: { work_task: checkBoxIdFullText },
           success: function (response) {
           
           console.log("response is:");
@@ -81,6 +95,97 @@
         }
       });
     });
+    var seeLesslinks,seeMoreLinks;
+function getSeeMoreLinks(){  
+ var elements=document.querySelectorAll('[id^="work_task_see_more_link"]');
+ console.log(elements);
+ for(var i=0;i<elements.length;i++){
+   elements[i].addEventListener("click",disableHidden(elements,i));
+ }
+ return elements;
+}
+
+function getSeeLessLinks(){
+ var elements1=document.querySelectorAll('[id^="work_task_see_less_link"]');
+ console.log(elements1);
+ for(var i=0;i<elements1.length;i++){
+   elements1[i].addEventListener("click",enableHidden(elements1,i));
+ }
+ return elements1;
+}
+
+function handleDomChanges(mutations) {
+  // Refresh the NodeList after any DOM update
+  seeLessLinks = getSeeLessLinks();
+  seeMoreLinks = getSeeMoreLinks();
+
+  // ... Other code ...
+}
+
+const observer = new MutationObserver(handleDomChanges);
+
+const observerOptions = {
+  childList: true,
+  subtree: true
+};
+
+// Start observing the document
+observer.observe(document.body, observerOptions);
+
+ function disableHidden(elements,index){
+   return function(){
+     console.log(index); 
+     console.log(elements[index]);
+     var anchorTagId=elements[index].id;
+     console.log(anchorTagId);
+     var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
+     console.log(anchorTagIdSplit);
+     var parentElement=document.getElementById("task_work_"+anchorTagIdSplit);
+     console.log(parentElement);
+     var oldLabel =parentElement.getElementsByTagName("label")[0];
+     console.log(oldLabel);
+     var oldlabelForValue=oldLabel.getAttribute("for");
+     var newLabel=document.createElement("label");
+     newLabel.setAttribute("for",oldlabelForValue);
+     var totalText=parentElement.querySelector('[id^="full_text_checkbox_work_"]').innerHTML;
+     newLabel.innerHTML=totalText;
+     console.log(newLabel.innerHTML);
+     parentElement.replaceChild(newLabel,oldLabel);
+     var seeLessLinkElement=document.createElement("a");
+     seeLessLinkElement.setAttribute("id","work_task_see_less_link"+anchorTagIdSplit);
+     seeLessLinkElement.innerHTML="See Less...";
+     console.log(elements[index].parentNode.nodeName);
+     parentElement.replaceChild(seeLessLinkElement,elements[index]);
+   };
+ }
+
+   
+ function enableHidden(elements1,index){
+   return function(){
+     console.log(index); 
+     console.log(elements1[index]);
+     var anchorTagId=elements1[index].id;
+     console.log(anchorTagId);
+     var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
+     console.log(anchorTagIdSplit);
+     var parentElement=document.getElementById("task_work_"+anchorTagIdSplit);
+     console.log(parentElement);
+     var oldLabel =parentElement.getElementsByTagName("label")[0];
+     console.log(oldLabel);
+     var oldlabelForValue=oldLabel.getAttribute("for");
+     var newLabel=document.createElement("label");
+     newLabel.setAttribute("for",oldlabelForValue);
+     var totalText=parentElement.querySelector('[id^="half_text_checkbox_work_"]').innerHTML;
+     newLabel.innerHTML=totalText;
+     console.log(newLabel.innerHTML);
+     parentElement.replaceChild(newLabel,oldLabel);
+     var seeLessLinkElement=document.createElement("a");
+     seeLessLinkElement.setAttribute("id","work_task_see_more_link"+anchorTagIdSplit);
+     seeLessLinkElement.innerHTML="See More...";
+     console.log(elements1[index].parentNode.nodeName);
+     parentElement.replaceChild(seeLessLinkElement,elements1[index]);
+   };
+ }
 </script>
 </body>
 </html>
