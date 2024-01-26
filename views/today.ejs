@@ -97,6 +97,17 @@
         }
     });
   });
+  $(document).ready(function (){
+    var inputText = $('#NewDayTask');
+    inputText.on('input',function(){
+      var enteredInputText=$(this).val();
+      if(enteredInputText.trim()===""){
+        this.setCustomValidity('The input field cannot be empty');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  });
 var seeLesslinks,seeMoreLinks;
 function getSeeMoreLinks(){  
  var elements=document.querySelectorAll('[id^="day_task_see_more_link"]');

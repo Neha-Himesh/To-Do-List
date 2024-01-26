@@ -31,7 +31,8 @@
     <tr>
       <div class="AddnewTaskContainer">
         <form action="/new-work-task" method="post">
-          <td class="AddTask"><input type="text" name="NewWorkTask" placeholder="Add new work task" width="400px">
+          <td class="AddTask">
+            <input type="text" id="NewWorkTask" name="NewWorkTask" placeholder="Add new work task" width="400px">
             <input type="datetime-local" id="TaskTime1" name="TaskTime">
             <button type="submit" name="AddNewWorkTask"  class="addButton">+</button>
           </td>
@@ -72,120 +73,129 @@
     });
   });
   $(document).ready(function () {
-      var dtNow = new Date();
-      var year = dtNow.getFullYear();
-      var month = (dtNow.getMonth() + 1).toString().padStart(2, '0');
-      var day = dtNow.getDate().toString().padStart(2, '0');
-      var hours = dtNow.getHours().toString().padStart(2, '0');
-      var minutes = dtNow.getMinutes().toString().padStart(2, '0');
+    var dtNow = new Date();
+    var year = dtNow.getFullYear();
+    var month = (dtNow.getMonth() + 1).toString().padStart(2, '0');
+    var day = dtNow.getDate().toString().padStart(2, '0');
+    var hours = dtNow.getHours().toString().padStart(2, '0');
+    var minutes = dtNow.getMinutes().toString().padStart(2, '0');
 
-      var currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-      console.log(currentDateTime);
-      $('#TaskTime1').attr('min', currentDateTime);
-      var inputDateTime = document.getElementById('TaskTime1');
+    var currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    console.log(currentDateTime);
+    $('#TaskTime1').attr('min', currentDateTime);
+    var inputDateTime = document.getElementById('TaskTime1');
 
-      inputDateTime.addEventListener('input', function () {
-        var selectedDateTime = new Date(this.value);
-        var currentDateTime = new Date();
+    inputDateTime.addEventListener('input', function () {
+      var selectedDateTime = new Date(this.value);
+      var currentDateTime = new Date();
 
-        if (selectedDateTime < currentDateTime) { //Ensures time and date are of future (current time isnt allowed to be selected).Check the requirement
-          this.setCustomValidity('Please select future date and time');
-        } else {
-          this.setCustomValidity('');
-        }
-      });
+      if (selectedDateTime < currentDateTime) { //Ensures time and date are of future (current time isnt allowed to be selected).Check the requirement
+        this.setCustomValidity('Please select future date and time');
+      } else {
+        this.setCustomValidity('');
+      }
     });
-    var seeLesslinks,seeMoreLinks;
-function getSeeMoreLinks(){  
- var elements=document.querySelectorAll('[id^="work_task_see_more_link"]');
- console.log(elements);
- for(var i=0;i<elements.length;i++){
-   elements[i].addEventListener("click",disableHidden(elements,i));
- }
- return elements;
-}
+  });
 
-function getSeeLessLinks(){
- var elements1=document.querySelectorAll('[id^="work_task_see_less_link"]');
- console.log(elements1);
- for(var i=0;i<elements1.length;i++){
-   elements1[i].addEventListener("click",enableHidden(elements1,i));
- }
- return elements1;
-}
+  $(document).ready(function (){
+    var inputText = $('#NewWorkTask');
+    inputText.on('input',function(){
+      var enteredInputText=$(this).val();
+      if(enteredInputText.trim()===""){
+        this.setCustomValidity('The input field cannot be empty');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  });
+  var seeLesslinks,seeMoreLinks;
+  function getSeeMoreLinks(){  
+    var elements=document.querySelectorAll('[id^="work_task_see_more_link"]');
+    console.log(elements);
+    for(var i=0;i<elements.length;i++){
+      elements[i].addEventListener("click",disableHidden(elements,i));
+   }
+   return elements;
+  }
 
-function handleDomChanges(mutations) {
-  // Refresh the NodeList after any DOM update
-  seeLessLinks = getSeeLessLinks();
-  seeMoreLinks = getSeeMoreLinks();
-
-  // ... Other code ...
-}
-
-const observer = new MutationObserver(handleDomChanges);
-
-const observerOptions = {
-  childList: true,
-  subtree: true
-};
-
-// Start observing the document
-observer.observe(document.body, observerOptions);
-
- function disableHidden(elements,index){
-   return function(){
-     console.log(index); 
-     console.log(elements[index]);
-     var anchorTagId=elements[index].id;
-     console.log(anchorTagId);
-     var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
-     console.log(anchorTagIdSplit);
-     var parentElement=document.getElementById("task_work_"+anchorTagIdSplit);
-     console.log(parentElement);
-     var oldLabel =parentElement.getElementsByTagName("label")[0];
-     console.log(oldLabel);
-     var oldlabelForValue=oldLabel.getAttribute("for");
-     var newLabel=document.createElement("label");
-     newLabel.setAttribute("for",oldlabelForValue);
-     var totalText=parentElement.querySelector('[id^="full_text_checkbox_work_"]').innerHTML;
-     newLabel.innerHTML=totalText;
-     console.log(newLabel.innerHTML);
-     parentElement.replaceChild(newLabel,oldLabel);
-     var seeLessLinkElement=document.createElement("a");
-     seeLessLinkElement.setAttribute("id","work_task_see_less_link"+anchorTagIdSplit);
-     seeLessLinkElement.innerHTML="See Less...";
-     console.log(elements[index].parentNode.nodeName);
-     parentElement.replaceChild(seeLessLinkElement,elements[index]);
-   };
+  function getSeeLessLinks(){
+   var elements1=document.querySelectorAll('[id^="work_task_see_less_link"]');
+   console.log(elements1);
+   for(var i=0;i<elements1.length;i++){
+     elements1[i].addEventListener("click",enableHidden(elements1,i));
+   }
+   return elements1;
  }
 
-   
- function enableHidden(elements1,index){
-   return function(){
-     console.log(index); 
-     console.log(elements1[index]);
-     var anchorTagId=elements1[index].id;
-     console.log(anchorTagId);
-     var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
-     console.log(anchorTagIdSplit);
-     var parentElement=document.getElementById("task_work_"+anchorTagIdSplit);
-     console.log(parentElement);
-     var oldLabel =parentElement.getElementsByTagName("label")[0];
-     console.log(oldLabel);
-     var oldlabelForValue=oldLabel.getAttribute("for");
-     var newLabel=document.createElement("label");
-     newLabel.setAttribute("for",oldlabelForValue);
-     var totalText=parentElement.querySelector('[id^="half_text_checkbox_work_"]').innerHTML;
-     newLabel.innerHTML=totalText;
-     console.log(newLabel.innerHTML);
-     parentElement.replaceChild(newLabel,oldLabel);
-     var seeLessLinkElement=document.createElement("a");
-     seeLessLinkElement.setAttribute("id","work_task_see_more_link"+anchorTagIdSplit);
-     seeLessLinkElement.innerHTML="See More...";
-     console.log(elements1[index].parentNode.nodeName);
-     parentElement.replaceChild(seeLessLinkElement,elements1[index]);
-   };
- }
+  function handleDomChanges(mutations) {
+    // Refresh the NodeList after any DOM update
+    seeLessLinks = getSeeLessLinks();
+    seeMoreLinks = getSeeMoreLinks();
+  }
+
+  const observer = new MutationObserver(handleDomChanges);
+
+  const observerOptions = {
+    childList: true,
+    subtree: true
+  };
+
+  // Start observing the document
+  observer.observe(document.body, observerOptions);
+
+  function disableHidden(elements,index){
+    return function(){
+      console.log(index); 
+      console.log(elements[index]);
+      var anchorTagId=elements[index].id;
+      console.log(anchorTagId);
+      var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
+      console.log(anchorTagIdSplit);
+      var parentElement=document.getElementById("task_work_"+anchorTagIdSplit);
+      console.log(parentElement);
+      var oldLabel =parentElement.getElementsByTagName("label")[0];
+      console.log(oldLabel);
+      var oldlabelForValue=oldLabel.getAttribute("for");
+      var newLabel=document.createElement("label");
+      newLabel.setAttribute("for",oldlabelForValue);
+      var totalText=parentElement.querySelector('[id^="full_text_checkbox_work_"]').innerHTML;
+      newLabel.innerHTML=totalText;
+      console.log(newLabel.innerHTML);
+      parentElement.replaceChild(newLabel,oldLabel);
+      var seeLessLinkElement=document.createElement("a");
+      seeLessLinkElement.setAttribute("id","work_task_see_less_link"+anchorTagIdSplit);
+      seeLessLinkElement.innerHTML="See Less...";
+      console.log(elements[index].parentNode.nodeName);
+      parentElement.replaceChild(seeLessLinkElement,elements[index]);
+    };
+  }
+
+  function enableHidden(elements1,index){
+    return function(){
+      console.log(index); 
+      console.log(elements1[index]);
+      var anchorTagId=elements1[index].id;
+      console.log(anchorTagId);
+      var anchorTagIdSplit=parseInt(anchorTagId.split("_")[4].split("k")[1]);
+      console.log(anchorTagIdSplit);
+      var parentElement=document.getElementById("task_work_"+anchorTagIdSplit);
+      console.log(parentElement);
+      var oldLabel =parentElement.getElementsByTagName("label")[0];
+      console.log(oldLabel);
+      var oldlabelForValue=oldLabel.getAttribute("for");
+      var newLabel=document.createElement("label");
+      newLabel.setAttribute("for",oldlabelForValue);
+      var totalText=parentElement.querySelector('[id^="half_text_checkbox_work_"]').innerHTML;
+      newLabel.innerHTML=totalText;
+      console.log(newLabel.innerHTML);
+      parentElement.replaceChild(newLabel,oldLabel);
+      var seeLessLinkElement=document.createElement("a");
+      seeLessLinkElement.setAttribute("id","work_task_see_more_link"+anchorTagIdSplit);
+      seeLessLinkElement.innerHTML="See More...";
+      console.log(elements1[index].parentNode.nodeName);
+      parentElement.replaceChild(seeLessLinkElement,elements1[index]);
+    };
+  }
 </script>
 </body>
 </html>

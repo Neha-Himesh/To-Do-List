@@ -160,110 +160,121 @@ app.post("/new-work-task",async function(req,res){
   const newAddedWorkTask_id=id;
   console.log(newAddedWorkTask_id);
   console.log(req.body["TaskTime"]);
-  if(req.body["TaskTime"]!=""){
-    const work_task_date_and_time=req.body["TaskTime"].split("T");
-    const date=new Date(work_task_date_and_time[0]+" "+work_task_date_and_time[1]);
-    console.log(date);
-    const SystemDate=new Date();
-    if (date.getTime() > SystemDate.getTime()){
-      toDo.create(
-        {
-          username: req.user.username,
-          googleId:req.user.googleId,
-          work_task_id:newAddedWorkTask_id,
-          work_task: newAddedWorkTask,
-          work_task_date:work_task_date_and_time[0],
-          work_task_time:work_task_date_and_time[1],
-        }).then(()=>{
-          const dateArray=work_task_date_and_time[0].split("-");
-          const timeArray=work_task_date_and_time[1].split(":");
-          console.log("Work task inserted");
-          const reminderJob = scheduleReminder(
-            'nehahimesh.10@gmail.com',
-            newAddedWorkTask,
-            'This is your reminder message! Ignore if the task is already done',
-            new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
-           );      
-          console.log(work_task_date_and_time);
-          console.log('Reminder scheduled:', reminderJob);
-          id++;
-          }).catch((err)=>{
-            console.log(err);
-          }); 
-    }
-    else {
-      console.log("The task couldnt be added as the time mentioned is not future time");
-    }        
- } 
- else{
-   toDo.create(
-     {
-       username: req.user.username,
-       googleId:req.user.googleId,
-       work_task_id:newAddedWorkTask_id,
-       work_task: newAddedWorkTask,
-     }).then(()=>{
-       console.log("Work task inserted");
-       id++;
-     }).catch((err)=>{
-       console.log(err);
-     });  
-   }     
+  if(newAddedWorkTask==""){
+    console.log("Input field cannot be empty");
+  }
+  else{
+    if(req.body["TaskTime"]!=""){
+      const work_task_date_and_time=req.body["TaskTime"].split("T");
+      const date=new Date(work_task_date_and_time[0]+" "+work_task_date_and_time[1]);
+      console.log(date);
+      const SystemDate=new Date();
+      if (date.getTime() > SystemDate.getTime()){
+        toDo.create(
+          {
+            username: req.user.username,
+            googleId:req.user.googleId,
+            work_task_id:newAddedWorkTask_id,
+            work_task: newAddedWorkTask,
+            work_task_date:work_task_date_and_time[0],
+            work_task_time:work_task_date_and_time[1],
+          }).then(()=>{
+            const dateArray=work_task_date_and_time[0].split("-");
+            const timeArray=work_task_date_and_time[1].split(":");
+            console.log("Work task inserted");
+            const reminderJob = scheduleReminder(
+              'nehahimesh.10@gmail.com',
+              newAddedWorkTask,
+              'This is your reminder message! Ignore if the task is already done',
+              new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
+             );      
+            console.log(work_task_date_and_time);
+            console.log('Reminder scheduled:', reminderJob);
+            id++;
+            }).catch((err)=>{
+              console.log(err);
+            }); 
+      }
+      else {
+        console.log("The task couldnt be added as the time mentioned is not future time");
+      }        
+   } 
+   else{
+     toDo.create(
+       {
+         username: req.user.username,
+         googleId:req.user.googleId,
+         work_task_id:newAddedWorkTask_id,
+         work_task: newAddedWorkTask,
+       }).then(()=>{
+         console.log("Work task inserted");
+         id++;
+       }).catch((err)=>{
+         console.log(err);
+       });  
+     } 
+  }     
   var workTasks=await toDo.find({work_task_id:{$ne:null}});
   res.render("work.ejs",{workToDoTitle : workTitle,addedWorkTasks: workTasks});
 });
 app.post("/new-day-task",async function(req,res){
   const newAddedDayTask=req.body["NewDayTask"];
   const newAddedDayTask_id=id;
-  if(req.body["TaskTime"]!=""){
-    const day_task_date_and_time=req.body["TaskTime"].split("T");
-    const date=new Date(day_task_date_and_time[0]+" "+day_task_date_and_time[1]);
-    console.log(date);
-    const SystemDate=new Date();
-    if (date.getTime() > SystemDate.getTime()){
+  if(newAddedDayTask==""){
+    console.log("Input field cannot be empty");
+  }
+  else{
+    if(req.body["TaskTime"]!=""){
+      const day_task_date_and_time=req.body["TaskTime"].split("T");
+      const date=new Date(day_task_date_and_time[0]+" "+day_task_date_and_time[1]);
+      console.log(date);
+      const SystemDate=new Date();
+   
+      if (date.getTime() > SystemDate.getTime()){
+        toDo.create(
+          {
+            username: req.user.username,
+            googleId:req.user.googleId,
+            day_task_id:newAddedDayTask_id,
+            day_task: newAddedDayTask,
+            day_task_date:day_task_date_and_time[0],
+            day_task_time:day_task_date_and_time[1],
+          }).then(()=>{
+            const dateArray=day_task_date_and_time[0].split("-");
+            const timeArray=day_task_date_and_time[1].split(":");
+            console.log("Day task inserted");
+            const reminderJob = scheduleReminder(
+             'nehahimesh.10@gmail.com',
+              newAddedDayTask,
+             'This is your reminder message! Ignore if the task is already done',
+              new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
+            );
+            console.log(day_task_date_and_time);
+            console.log('Reminder scheduled:', reminderJob);
+            id++;
+          }).catch((err)=>{
+            console.log(err);
+          });
+      } 
+      else {
+        console.log("The task couldnt be added as the time mentioned is not future time");
+      }
+    } 
+    else{
       toDo.create(
         {
           username: req.user.username,
           googleId:req.user.googleId,
           day_task_id:newAddedDayTask_id,
           day_task: newAddedDayTask,
-          day_task_date:day_task_date_and_time[0],
-          day_task_time:day_task_date_and_time[1],
         }).then(()=>{
-          const dateArray=day_task_date_and_time[0].split("-");
-          const timeArray=day_task_date_and_time[1].split(":");
           console.log("Day task inserted");
-          const reminderJob = scheduleReminder(
-           'nehahimesh.10@gmail.com',
-            newAddedDayTask,
-            'This is your reminder message! Ignore if the task is already done',
-            new Date(dateArray[0], dateArray[1]-1, dateArray[2],  timeArray[0], timeArray[1], 0)
-          );
-          console.log(day_task_date_and_time);
-          console.log('Reminder scheduled:', reminderJob);
           id++;
         }).catch((err)=>{
           console.log(err);
         });
-    } 
-    else {
-      console.log("The task couldnt be added as the time mentioned is not future time");
-    }
+   }
   } 
-  else{
-    toDo.create(
-      {
-        username: req.user.username,
-        googleId:req.user.googleId,
-        day_task_id:newAddedDayTask_id,
-        day_task: newAddedDayTask,
-      }).then(()=>{
-        console.log("Day task inserted");
-        id++;
-      }).catch((err)=>{
-        console.log(err);
-      });
-  }
   var dayTasks=await toDo.find({day_task_id:{$ne:null}});
   res.render("today.ejs",{displayDate : dateInRequiredForm,addedDayTasks: dayTasks});
 });
