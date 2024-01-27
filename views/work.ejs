@@ -7,7 +7,7 @@
         <h1><%= workToDoTitle %></h1>
       </th>
     </tr>
-    <% for (var i=0;i<addedWorkTasks.length;i++){ %>
+    <% for (var i=0; i < addedWorkTasks.length; i++) { %>
       <tr>    
         <td style="width: 500px;">
           <div class="work-tasks-text" id="<%='task_work_'+ i %>">
@@ -44,6 +44,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+
+  // This should be in a separate file in your public/ folder called app.js
   $(document).ready(function () {
     $(".task-work-checkbox").on("change", function () {
       if ($(this).is(":checked")) {
@@ -53,6 +55,8 @@
 
         $.ajax({
           type: "POST",
+
+          // do not add absolute url here. Only relateive urls. So, you can remove the enture localhost part and just make a request to the url starting as /
           url: "http://localhost:3000/work/delete-work-value",
           data: { work_task: checkBoxIdFullText },
           success: function (response) {
