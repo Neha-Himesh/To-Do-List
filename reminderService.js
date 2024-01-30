@@ -1,5 +1,5 @@
 // reminderService.js
-const schedule = require('node-schedule');
+const schedule    = require('node-schedule');
 const transporter = require('./emailConfig');
 
 function scheduleReminder(email, subject, message, date) {
@@ -7,10 +7,10 @@ function scheduleReminder(email, subject, message, date) {
   const job = schedule.scheduleJob(date, function () {
     // Send the email
     const mailOptions = {
-      from: 'nehahimesh.10@gmail.com',
-      to: email,
+      from   : 'nehahimesh.10@gmail.com',
+      to     : email,
       subject: subject,
-      text: message
+      text   : message
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
